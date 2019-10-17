@@ -9,4 +9,5 @@ def listProducts(nums):
             products.append(p)
     return(products)
 
+
 print(listProducts([1, 2, 3]))
