@@ -1,6 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////////
 
 // #645
+// determine if the target string can be produced by moving down or left starting from any element
+// in the given 2d array of characters
 // 2 subproblems:
 // - recursive fnc that tries to build target from a given starting point
 // - fnc that calls the above for all starting points (i.e. every point in the matrix)
@@ -43,4 +45,59 @@ const findWord2D = (matrix, target) => {
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-// #
+// #641
+// find the smallet possible integer that is not the sum of a subset of the given array
+const minNotSumOfSubset = (arr) => {
+    let flag = true, index = 0, track = arr[index] + 1;
+    while(flag) {
+        if(arr.includes(track)) {
+            index++;
+            track++;
+        } else if(arr.includes(track - arr[index])) {
+            track++;
+        } else {
+            flag = false;
+        }
+    }
+    return track;
+};
+
+// console.log(minNotSumOfSubset([1, 2, 3, 10]));
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// #639
+// given a mapping of digits to characters, return every possible string that can be
+// assembled from a sequence of integers
+const digitsToPossibleStrings = (map) => {
+    var sol = [];
+    // map.keys returns a MapIterator object, need to convert to array w/ spread syntax
+    var keys = [...map.keys()];
+    const dfs = (str, map, k) => {
+        // if current string is of appropriate length, add it to solution array
+        if(str.length === keys.length) {
+            sol.push(str);
+        }
+        if(map.has(keys[k])) {
+            let arr = map.get(keys[k]);
+            for(let i = 0; i < arr.length; i++) {
+                // call dfs on every element in current key's mapped array, add current character
+                // to the string being passed
+                dfs(str + arr[i], map, k + 1);
+            }
+        }
+    }
+    dfs("", map, 0);
+    return sol;
+};
+
+// let testm = new Map();
+// testm.set("2", ["a", "b", "c"]);
+// testm.set("3", ["d", "e", "f"]);
+// testm.set("4", ["g", "h", "i"]);
+
+// console.log(digitsToPossibleStrings(testm));
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// #639
