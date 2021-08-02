@@ -1459,4 +1459,45 @@ const maxProductDifference = (nums) => {
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-// #
+// #206
+const reverseList = (head) => {
+    var prev = null, next;
+    while(head) {
+        next = head.next;
+        head.next = prev;
+        prev = head;
+        head = next;
+    }
+    return prev;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// #1695
+// way too slow
+const maximumUniqueSubarray = (nums) => {
+
+    const findUniqueSubarray = (arr, index) => {
+        let arr2 = [], sum = arr[index], plus = index + 1, minus = index - 1;
+        arr2.push(arr[index]);
+        while(minus > 0 && !arr2.includes(arr[minus])) {
+            arr2.push(arr[minus]);
+            sum += arr[minus];
+            minus = minus - 1; 
+        }
+        while(plus < arr.length && !arr2.includes(arr[plus])) {
+            arr2.push(arr[plus]);
+            sum += arr[plus];
+            plus = plus + 1; 
+        }
+        return sum;
+    };
+
+    let max = 0;
+    for(let i = 0; i < nums.length; i++) {
+        max = Math.max(max, findUniqueSubarray(nums, i));
+    }
+    return max;
+};
+
+console.log(maximumUniqueSubarray([5,2,1,2,5,2,1,2,5]));
