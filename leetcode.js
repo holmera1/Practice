@@ -25,7 +25,9 @@ const increasingBST = (root) => {
 // sends the 2 alues to the compare function, and sorts the values according
 // to the returned (negative, zero, positive) value
 const canMakeArithmeticProgression = (arr) => {
-    arr.sort((a, b) => a - b);
+    arr.sort((a, b) => {
+        return a - b;
+    });
     let diff = Math.abs(arr[1] - arr[0]);
     for(let i = 2; i < arr.length; i++) {
         if(Math.abs(arr[i] - arr[i-1]) !== diff) {
@@ -378,7 +380,9 @@ let threeSum = (nums) => {
     }
     // need to sort nums to eliminate return values with 
     // rearranged elements (if numssorted, set will filter them)
-    nums = nums.sort((a, b) => a - b);
+    nums.sort((a, b) => {
+        return a - b;
+    });
     let set = new Set();
     dfs(nums, 0, [], set);
     let sol = new Array();
@@ -636,12 +640,11 @@ const reverseWords = (s) => {
 // Not from leetcode
 // Reverses the order of elements in an array in O(n) time
 const reverseArr = (arr) => {
-    // simply swap each element n where n < arr.length / 2 with arr.length - (n + 1)
-    for(let i = 0; i < arr.length / 2; i++) {
-        let j = arr.length - (i + 1);
-        let a1 = arr[i], a2 = arr[j];
-        arr[i] = a2;
-        arr[j] = a1;
+    let start = 0, end = arr.length - 1;
+    while(start < end) {
+        [arr[start], arr[end]] = [arr[end], arr[start]];
+        start++;
+        end--;
     }
     return arr;
 }
@@ -844,7 +847,9 @@ const isStringPalindrome = (s) => {
 
 const maximumUnits = (boxTypes, truckSize) => {
     // sort 2d array in descending order of the second element of each subarray
-    boxTypes.sort((a, b) => b[1] - a[1]);
+    boxTypes.sort((a, b) => {
+        return a - b;
+    });
     let j = 0, sol = 0;
     while(truckSize > 0) {
         if(boxTypes[j][0] === 0) {
@@ -1307,7 +1312,7 @@ const findLucky = (arr) => {
     }
     let lucky = -1;
     // for each key, if its value is equal to itself then it is lucky
-    for(key of map.keys()) {
+    for(let key of map.keys()) {
         // set lucky to curent key iff it is larger than current lucky num
         if(map.get(key) === key && key > lucky) lucky = key;
     }
@@ -1453,7 +1458,9 @@ const getLucky = (s, k) => {
 
 // #1913
 const maxProductDifference = (nums) => {
-    nums = nums.sort((a, b) => (a - b));
+    nums.sort((a, b) => {
+        return a - b;
+    });
     return (nums[nums.length - 1] * nums[nums.length - 2]) - (nums[1] * nums[0]);
 };
 
@@ -1474,30 +1481,121 @@ const reverseList = (head) => {
 //////////////////////////////////////////////////////////////////////////////////////
 
 // #1695
-// way too slow
+// drawing the process out would have helped immensely
+// got sliding window concept right, just needed better execution of minutae
 const maximumUniqueSubarray = (nums) => {
-
-    const findUniqueSubarray = (arr, index) => {
-        let arr2 = [], sum = arr[index], plus = index + 1, minus = index - 1;
-        arr2.push(arr[index]);
-        while(minus > 0 && !arr2.includes(arr[minus])) {
-            arr2.push(arr[minus]);
-            sum += arr[minus];
-            minus = minus - 1; 
+    var max = 0, left = 0, right = 0, len = nums.length, map = new Map();
+    map.set(nums[0], 0);
+    while(right < len) {
+        let sum = 0;
+        // move right bondary as far as possible, adding to the map as it increments
+        right += 1;
+        while(right < len && !map.has(nums[right])) {
+            map.set(nums[right], right);
+            right++;
         }
-        while(plus < arr.length && !arr2.includes(arr[plus])) {
-            arr2.push(arr[plus]);
-            sum += arr[plus];
-            plus = plus + 1; 
+        // when encounters repeat num or end of the array, 
+        // sum all nums between and including left and right boundary
+        for(let i = left; i < right; i++) {
+            sum += nums[i];
         }
-        return sum;
-    };
-
-    let max = 0;
-    for(let i = 0; i < nums.length; i++) {
-        max = Math.max(max, findUniqueSubarray(nums, i));
+        // take max of current max and sum
+        max = Math.max(max, sum);
+        // delete necessary elements before moving the left boundary
+        for(let i = left; i < map.get(nums[right]); i++) {
+            map.delete(nums[i]);
+        }
+        // move left to index of first occurence of repeated number + 1
+        left = map.get(nums[right]) + 1;
+        // update mapped index of val at right boundary
+        map.set(nums[right], right);
     }
     return max;
 };
 
-console.log(maximumUniqueSubarray([5,2,1,2,5,2,1,2,5]));
+//////////////////////////////////////////////////////////////////////////////////////
+
+// #1837
+const sumBase = (n, k) => {
+    let str = n.toString(k), sum = 0;
+    for(let i = 0; i < str.length; i++) {
+        sum += parseInt(str.charAt(i));
+    }
+    return sum;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// #1018
+const prefixesDivBy5 = (nums) => {
+    var arr = [], sol = [];
+    for(let i = 0; i < nums.length; i++) {
+        arr.push(nums[i]);
+        sol.push(parseInt(arr.join(""), 2) % 5 === 0);
+    }
+    return sol;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// #257
+const binaryTreePaths = (root) => {
+    var sol = [];
+    const recur = (root, path) => {
+        if(root) {
+            if(root.left) {
+                recur(root.left, path + `->${root.left.val}`);
+            }
+            if(root.right) {
+                recur(root.right, path + `->${root.right.val}`);
+            }
+        }
+        if(!root.left && !root.right) {
+            sol.push(path);  
+        }
+    };
+    recur(root, `${root.val}`);
+    return sol;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// #344
+const reverseString = (s) => {
+    var start = 0, end = s.length - 1;
+    while(start < end) {
+        [s[start], s[end]] = [s[end], s[start]];
+        start++;
+        end--;
+    }
+    return s;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// #1748
+const sumOfUnique = (nums) => {
+    var map = new Map(), sum = 0;
+    nums.forEach((el) => {
+        map.has(el) ? map.set(el, map.get(el) + 1) : map.set(el, 1);
+    });
+    for(let [key, value] of map) {
+        if(value === 1) {
+            sum += key;
+        }
+    }
+    return sum;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// #1636
+const frequencySort = (nums) => {
+    var map = new Map();
+    nums.forEach((el) => map.has(el) ? map.set(el, map.get(el) + 1) : map.set(el, 1));
+    return nums.sort((a, b) => map.get(a) === map.get(b) ? b - a : map.get(a) - map.get(b));
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// #
