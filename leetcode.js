@@ -933,28 +933,27 @@ const isHappy = (n) => {
 //////////////////////////////////////////////////////////////////////////////////////
 
 // #226
-const invertTree = (root) => {
-    if(root) {
-        let tmp = invertTree(root.left);
-        root.left = invertTree(root.right);
-        root.right = tmp;
-    }
-    return root;
-};
+// const invertTree = (root) => {
+//     if(root) {
+//         let tmp = invertTree(root.left);
+//         root.left = invertTree(root.right);
+//         root.right = tmp;
+//     }
+//     return root;
+// };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
 // #53
-// need to understand this one better
-const maxSubArray = (nums) => {
-    let x = 0;
-    let y = nums[0];
-    for(let num of nums) {
-        x = Math.max(num, x + num);
-        y = Math.max(y, x);
-    }
-    return y;
-};
+// const maxSubArray = (nums) => {
+//     let localMax = 0;
+//     let max = nums[0];
+//     for(let n of nums) {
+//         localMax = Math.max(localMax + n, n);
+//         max = Math.max(max, localMax);
+//     }
+//     return max;
+// };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -989,19 +988,19 @@ const getIntersectionNode = (headA, headB) => {
 //////////////////////////////////////////////////////////////////////////////////////
 
 // #104
-const maxDepth = (root) => {
-    const iter = (node, level) => {
-        if(node.right && node.left) {
-            return Math.max(iter(node.right, level + 1), iter(node.left, level + 1));
-        } else if(node.right || node.left) {
-            return node.right ? iter(node.right, level + 1) : iter(node.left, level + 1);
-        } else {
-            return level;
-        }
-    };
-    if(!root) return 0;
-    return iter(root, 1);
-};
+// const maxDepth = (root) => {
+//     const iter = (node, level) => {
+//         if(node.right && node.left) {
+//             return Math.max(iter(node.right, level + 1), iter(node.left, level + 1));
+//         } else if(node.right || node.left) {
+//             return node.right ? iter(node.right, level + 1) : iter(node.left, level + 1);
+//         } else {
+//             return level;
+//         }
+//     };
+//     if(!root) return 0;
+//     return iter(root, 1);
+// };
 
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -1466,20 +1465,6 @@ const maxProductDifference = (nums) => {
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-// #206
-const reverseList = (head) => {
-    var prev = null, next;
-    while(head) {
-        next = head.next;
-        head.next = prev;
-        prev = head;
-        head = next;
-    }
-    return prev;
-};
-
-//////////////////////////////////////////////////////////////////////////////////////
-
 // #1695
 // drawing the process out would have helped immensely
 // got sliding window concept right, just needed better execution of minutae
@@ -1598,4 +1583,287 @@ const frequencySort = (nums) => {
 
 //////////////////////////////////////////////////////////////////////////////////////
 
-// #
+// #206
+// const reverseList = (head) => {
+//     let prev = null, curr = head, next;
+//     while(curr) {
+//         next = curr.next;
+//         curr.next = prev;
+//         prev = curr;
+//         curr = next;
+//     }
+//     return prev;
+// };
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+const reverseList = (head) => {
+    let prev = null, curr = head, next;
+    while(curr) {
+        next = curr.next;
+        curr.next = prev;
+        prev = curr;
+        curr = next;
+    }
+    return prev;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+const invertTree = (root) => {
+    if(root) {
+        [root.left, root.right] = [invertTree(root.right), invertTree(root.left)];
+    }
+    return root;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+const nFib = (n) => {
+    if(n <= 1) {
+        return n;
+    }
+    return nFib(n - 1) + nFib(n - 2);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+const maxSubArray = (nums) => {
+    let localMax = 0;
+    let max = nums[0];
+    for(let n of nums) {
+        localMax = Math.max(localMax + n, n);
+        max = Math.max(max, localMax);
+    }
+    return max;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+const removeElement = (nums, val) => {
+    for(let i = 0; i < nums.length; i++) {
+        if(nums[i] === val) {
+            nums.splice(i, 1);
+            i--;
+        }
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// better version of anagram difference checker (minimizes code repetition)
+// use a map to keep track of differences of letters in the two strings being compared
+// create a new map and call the updateMap helper function for each pair of strings
+var minStepsArr = function(arr, arr2) {
+    var updateMap = (map, string, add) => {
+        for(let i = 0; i < string.length; i++) {
+            let ch = string.charAt(i);
+            map.has(ch) ? map.set(ch, map.get(ch) + add) : map.set(ch, add);
+        }
+        return map;
+    }
+    let sol = [];
+    for(let i = 0; i < arr.length; i++) {
+        if(arr[i].length !== arr2[i].length) {
+            sol.push(-1);
+        } else {
+            let map = new Map(), diff = 0;
+            map = updateMap(map, arr[i], 1);
+            map = updateMap(map, arr2[i], -1);
+            for(let value of map.values()) {
+                diff += Math.abs(value);
+            }
+            sol.push(diff / 2);
+        }
+    }
+    return sol;
+};
+//console.log(minStepsArr(['aaa', 'aba', 'abc', 'a'], ['aaa', 'abc', 'def', 'fdfdd']));
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// two sum
+// use a map and detemine if complement is already stored in map
+// map the values (keys) to their indicies (values) to be able to return the index as requested
+let twoSum = (nums, target) => {
+    var map = new Map();
+    for(let i = 0; i < nums.length; i++) {
+        let comp = target - nums[i];
+        if(map.has(comp)) {
+            return [i, map.get(comp)];
+        } else {
+            map.set(nums[i], i);
+        }
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// maximum depth of binary tree
+// use recursion and keep track of level while going down the tree
+const maxDepth = (root) => {
+    const recur = (node, level) => {
+        if(!node) {
+            return level - 1;
+        } else {
+            return Math.max(recur(node.left, level + 1), recur(node.right, level + 1));
+        }
+    }
+    return recur(root, 1);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// uses binary search to find an element, or if not found, where the element would be if it was present
+// in the given sorted array
+const searchInsert = (nums, target) => {
+    let start = 0, end = nums.length - 1, mid = 0;
+    while(start <= end) {
+        mid = Math.floor((start + end) / 2);
+        if(nums[mid] === target) return mid;
+        if(nums[mid] > target) end = mid - 1;
+        else start = mid + 1;
+    }
+    return start;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// find the smallest possible length of a (contiguous) subarray of nums that has the same degree as nums
+const findShortestSubArray = (nums) => {
+    var map = new Map(), values = new Set(), maxDegree = 1;
+    for(let num of nums) {
+        map.has(num) ? map.set(num, map.get(num) + 1) : map.set(num, 1);
+        if(map.get(num) > maxDegree) {
+            maxDegree = map.get(num);
+            values.clear();
+            values.add(num);
+        } else if(map.get(num) === maxDegree) {
+            values.add(num);
+        }
+    }
+    if(maxDegree === 1) {
+        return 1;
+    }
+    var sol = nums.length;
+    for(let num of values) {
+        let distance = nums.lastIndexOf(num) - nums.indexOf(num) + 1;
+        if(distance < sol) {
+            sol = distance;
+        }
+    }
+    return sol;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// return the subarray with the smallest possible sum, length not specified
+const minSubArray = (nums) => {
+    let localMin = 0;
+    let globalMin = nums[0];
+    for(let num of nums) {
+        localMin = Math.min(localMin + num, num);
+        globalMin = Math.min(localMin, globalMin);
+    }
+    return globalMin;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// return the subarray of nums of length k with the smallest possible sum
+const minSubArrayLength = (nums, k) => {
+    let currSum = 0;
+    for(let i = 0; i < k; i++) {
+        currSum += nums[i];
+    }
+    let minSum = currSum, start = 0;
+    for(let i = 0; i < nums.length - k; i++) {
+        currSum = currSum - nums[i] + nums[i + k];
+        if(currSum < minSum) {
+            minSum = currSum;
+            start = i + 1;
+        }
+    }
+    return nums.slice(start, start + k);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// returns the maximum difference of two elements of nums such that the smaller element appears before the larger one
+const maxDifferenceSmallBeforeLarge = (nums) => {
+    var maxDifference = nums[1] - nums[0];
+    var smallest = nums[0];
+    for(let num of nums) {
+        if(num < smallest) {
+            smallest = num;
+        } else if(num - smallest > maxDifference) {
+            maxDifference = num - smallest;
+        }
+    }
+    return maxDifference;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// returns an array containing all of the factors of a given input number
+const getAllFactors = (num) => {
+    var sol = [];
+    for(let i = 1; i <= num; i++) {
+        if(num % i === 0) {
+            sol.push(i);
+        }
+    }
+    return sol;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// returns count of prime numbers less than the input
+const countPrimes = (num) => {
+    var primeTable = Array(num).fill(true), count = 0;
+    for(let i = 2; i < num; i++) {
+        if(primeTable[i] === true) {
+            count++;
+            for(let j = 2; i * j < num; j++) {
+                primeTable[i * j] = false;
+            }
+        }
+    }
+    return count;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// determines if goal can be achieved by rotating s any amount
+const rotateString = (s, goal) => {
+    if(goal.length !== s.length) {
+        return false;
+    }
+    for(let i = 1; i < goal.length; i++) {
+        let substr = goal.substring(0, i);
+        if(!(s.includes(substr))) {
+            return s.includes(goal.substring(i - 1, goal.length));
+        }
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// returns the difference between the product of a numbers digits and the sum of a numbers digits
+const bruh = (num) => {
+    var sum = num.toString().split('').reduce((acc, curr) => {
+       return parseInt(acc) + parseInt(curr);
+    });
+    var prod = num.toString().split('').reduce((acc, curr) => {
+        return parseInt(acc) * parseInt(curr);
+    })
+    return prod - sum;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// given an array, find the longest sequence of numbers (increasing by one, i.e. 1, 2, 3, 4, etc.) that can be built from its elements
+// subproblem from failed coding challenge
+const longestSequence = (arr) => {
+
+}
